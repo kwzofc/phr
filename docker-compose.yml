@@ -9,11 +9,22 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   web:
     build: .
     command: >
       sh -c "python manage.py migrate &&
+             python manage.py createsuperuser --username superuser --password 123 --email superuser@example.com &&
              python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db
     volumes:
       - .:/code
     ports:
@@ -22,5 +33,4 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    depends_on:
-      - db
+    
