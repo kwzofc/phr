@@ -1,3 +1,2 @@
-# phr
-Personal Health Record
+# Personal Health Record
 sudo docker-compose up
